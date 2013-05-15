@@ -22,6 +22,9 @@ default['chef-server']['nightlies'] = false
 default['chef-server']['package_file'] = nil
 default['chef-server']['package_checksum'] = nil
 default['chef-server']['api_fqdn'] = node['fqdn']
+# FIXME Proxy configuration for now, change to accept the chef_run proxy.
+default['chef-server']['proxy_address'] = nil
+default['chef-server']['proxy_port'] = 80
 
 #
 # Chef Server Tunables

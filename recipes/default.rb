@@ -20,7 +20,9 @@ require 'chef/util/file_edit'
 if node['chef-server']['package_file'].nil? || node['chef-server']['package_file'].empty?
   omnibus_package = OmnitruckClient.new(node).package_for_version(node['chef-server']['version'],
                                                         node['chef-server']['prereleases'],
-                                                        node['chef-server']['nightlies'])
+                                                        node['chef-server']['nightlies'],
+                                                        node['chef-server']['proxy_address'],
+                                                        node['chef-server']['proxy_port'])
   unless omnibus_package
     err_msg = "Could not locate chef-server"
     err_msg << " pre-release" if node['chef-server']['prereleases']

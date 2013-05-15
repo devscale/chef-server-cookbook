@@ -27,7 +27,7 @@ class OmnitruckClient
     @machine_architecture = node[:kernel][:machine]
   end
 
-  def package_for_version(version, prerelease=false, nightly=false)
+  def package_for_version(version, prerelease=false, nightly=false, proxy_address=nil, proxy_port=nil)
     url = "http://www.opscode.com/chef/download-server"
     url << "?p=#{platform}"
     url << "&pv=#{platform_version}"
@@ -36,16 +36,21 @@ class OmnitruckClient
     url << "&prerelease=#{prerelease}"
     url << "&nightlies=#{nightly}"
     Chef::Log.info("Omnitruck download-server request: #{url}")
-    target = redirect_target(url)
+    target = redirect_target(url, proxy_address, proxy_port)
     Chef::Log.info("Downloading chef-server package from: #{target}") if target
     target
   end
 
   private
 
-  def redirect_target(url)
+  def redirect_target(url, proxy_address, proxy_port)
     url = URI.parse(url)
-    http = Net::HTTP.new(url.host, url.port)
+    http = nil
+    if proxy_address.nil?
+      http = Net::HTTP.new(url.host, url.port)
+    else
+      http = Net::HTTP.new(url.host, url.port, proxy_address, proxy_port)
+    end
     if url.scheme == "https"
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
